@@ -57,13 +57,13 @@ pipeline {
         stage('2. Verificación de Código y Linter') {
             steps {
                 echo "📦 Instalando dependencias de Node.js..."
-                sh "npm ci"
+                bat "npm ci"
 
                 echo "🔍 Ejecutando verificación estricta de TypeScript..."
-                sh "npx tsc --noEmit"
+                bat "npx tsc --noEmit"
 
                 echo "🧹 Ejecutando ESLint..."
-                sh "npm run lint"
+                bat "npm run lint"
             }
         }
 
@@ -73,7 +73,7 @@ pipeline {
         stage('3. Pruebas Unitarias') {
             steps {
                 echo "🧪 Ejecutando suite de pruebas unitarias..."
-                sh 'npm run test -- --passWithNoTests'
+                bat 'npm run test -- --passWithNoTests'
             }
         }
 
@@ -88,15 +88,15 @@ pipeline {
                     // Navegamos a la carpeta de infraestructura
                     dir('infra') {
                         // 1. Seleccionar el Stack objetivo (dev / stg / prd)
-                        sh "pulumi stack select ${params.ENVIRONMENT} || pulumi stack init ${params.ENVIRONMENT}"
+                        bat "pulumi stack select ${params.ENVIRONMENT} || pulumi stack init ${params.ENVIRONMENT}"
 
                         // 2. Ejecutar despliegue 100% automatizado según el entorno
                         if (params.ENVIRONMENT == 'dev') {
-                            // En desarrollo local usamos pulumilocal que apunta a LocalStack (puerto 4566)
-                            sh 'pulumilocal up --yes --non-interactive'
+                            // En desarrollo local en Windows usamos pulumilocal que apunta a LocalStack (puerto 4566)
+                            bat 'pulumilocal up --yes --non-interactive'
                         } else {
                             // En stg/prd usamos pulumi apuntando a AWS real
-                            sh 'pulumi up --yes --non-interactive'
+                            bat 'pulumi up --yes --non-interactive'
                         }
                     }
                 }
