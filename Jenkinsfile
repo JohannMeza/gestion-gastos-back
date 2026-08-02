@@ -37,7 +37,7 @@ pipeline {
                     echo "🔐 Conectando con HashiCorp Vault para el proyecto '${env.PROJECT_NAME}' en entorno '${params.ENVIRONMENT}'..."
 
                     withVault(vaultSecrets: [[
-                        path: "secret/data/${env.PROJECT_NAME}/${params.ENVIRONMENT}",
+                        path: "secret/${env.PROJECT_NAME}/${params.ENVIRONMENT}",
                         engineVersion: 2,
                         secretValues: [
                             [envVar: 'LOCALSTACK_AUTH_TOKEN', vaultKey: 'localstack_auth_token'],
