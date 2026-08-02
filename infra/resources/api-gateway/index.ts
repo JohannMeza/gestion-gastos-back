@@ -1,5 +1,6 @@
 import Constants from '../../../infra/contants';
 import * as aws from '@pulumi/aws';
+import * as pulumi from '@pulumi/pulumi';
 
 export function createApiGateWay() {
   const apiName = `Prestadeuda-API-${Constants.environment}`;
@@ -65,13 +66,13 @@ export function createApiGateWay() {
       resourceId: v1Resource.id,
       httpMethod: healthMethod.httpMethod,
       statusCode: healthMethodResponse.statusCode,
-      selectionPattern: '200', // 👈 ¡Añadido para indicarle a LocalStack que empareje la respuesta 200 del MOCK!
+      selectionPattern: '', // Default output mapping para MOCK 200
       responseTemplates: {
         'application/json':
           '{"statusCode": 200, "message": "Prestadeuda API Gateway v1 activa"}',
       },
     },
-    { dependsOn: [healthIntegration] },
+    { dependsOn: [healthIntegration, healthMethodResponse] },
   );
 
   // 7. Sub-Rutas de Microservicios
@@ -99,11 +100,20 @@ export function createApiGateWay() {
     pathPart: 'analytics',
   });
 
-  // 8. Despliegue del API Gateway (Stage dev)
+  // 8. Despliegue del API Gateway (Stage dev con forzado de rediferenciación)
   const deployment = new aws.apigateway.Deployment(
-    'api-deployment',
+    'api-deployment-v2',
     {
       restApi: api.id,
+      triggers: {
+        redeployment: pulumi
+          .all([
+            healthIntegrationResponse.id,
+            healthIntegration.id,
+            healthMethod.id,
+          ])
+          .apply(([ir, i, m]) => JSON.stringify({ ir, i, m })),
+      },
     },
     {
       dependsOn: [
