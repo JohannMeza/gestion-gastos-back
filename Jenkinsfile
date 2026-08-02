@@ -56,8 +56,9 @@ pipeline {
         // ---------------------------------------------------------
         stage('2. Verificación de Código y Linter') {
             steps {
-                echo "📦 Instalando dependencias de Node.js..."
+                echo "📦 Instalando dependencias de Node.js en raíz e infra..."
                 bat "npm ci"
+                bat "cd infra && npm install"
 
                 echo "🔍 Ejecutando verificación estricta de TypeScript..."
                 bat "npx tsc --noEmit"
@@ -88,7 +89,7 @@ pipeline {
                     // Navegamos a la carpeta de infraestructura
                     dir('infra') {
                         // 1. Seleccionar el Stack objetivo (dev / stg / prd)
-                        bat "pulumi stack select ${params.ENVIRONMENT} || pulumi stack init ${params.ENVIRONMENT}"
+                        bat "pulumilocal stack select ${params.ENVIRONMENT} || pulumilocal stack init ${params.ENVIRONMENT}"
 
                         // 2. Ejecutar despliegue 100% automatizado según el entorno
                         if (params.ENVIRONMENT == 'dev') {
