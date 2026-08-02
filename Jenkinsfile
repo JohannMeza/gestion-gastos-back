@@ -35,16 +35,19 @@ pipeline {
           echo "Conectando con Hashicorp Vault para obtener credenciales..."
 
           // Conexion segurda a Vault mediante el plugin de Jenkins
-          withVault(vaultSecrets: [[
-            path: "secret/data/${env.PROJECT_NAME}/${params.ENVIRONMENT}",
-            engineVersion: 2,
-            secretValues: [
+          withVault(
+            vaultCredentialId: 'vault-token-id', // 👈 ¡Apunta al Token que creaste en Jenkins!
+            vaultSecrets: [[
+              path: "secret/data/${env.PROJECT_NAME}/${params.ENVIRONMENT}",
+              engineVersion: 2,
+              secretValues: [
                 [envVar: 'LOCALSTACK_AUTH_TOKEN', vaultKey: 'localstack_auth_token'],
                 [envVar: 'AWS_ACCESS_KEY_ID', vaultKey: 'aws_access_key_id'],
                 [envVar: 'AWS_SECRET_ACCESS_KEY', vaultKey: 'aws_secret_access_key']
-            ]
-          ]]) {
-              echo "Secretos inyectados correctamente desde Vault."
+              ]
+            ]]
+          ) {
+            echo "Secretos inyectados correctamente desde Vault."
           }
         }
       }
