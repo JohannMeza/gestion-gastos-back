@@ -57,7 +57,7 @@ export function createApiGateWay() {
     },
   );
 
-  // 6. Mapeo de Respuesta de Integración (Integration Response HTTP 200 JSON)
+  // 6. Mapeo de Respuesta de Integración (Integration Response HTTP 200 JSON con selectionPattern)
   const healthIntegrationResponse = new aws.apigateway.IntegrationResponse(
     'v1-health-integration-response',
     {
@@ -65,6 +65,7 @@ export function createApiGateWay() {
       resourceId: v1Resource.id,
       httpMethod: healthMethod.httpMethod,
       statusCode: healthMethodResponse.statusCode,
+      selectionPattern: '200', // 👈 ¡Añadido para indicarle a LocalStack que empareje la respuesta 200 del MOCK!
       responseTemplates: {
         'application/json':
           '{"statusCode": 200, "message": "Prestadeuda API Gateway v1 activa"}',
