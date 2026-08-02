@@ -33,23 +33,29 @@ export function createApiGateWay() {
   });
 
   // 4. Integración MOCK para la respuesta de prueba
-  const healthIntegration = new aws.apigateway.Integration('v1-health-integration', {
-    restApi: api.id,
-    resourceId: v1Resource.id,
-    httpMethod: healthMethod.httpMethod,
-    type: 'MOCK',
-    requestTemplates: {
-      'application/json': '{"statusCode": 200}',
+  const healthIntegration = new aws.apigateway.Integration(
+    'v1-health-integration',
+    {
+      restApi: api.id,
+      resourceId: v1Resource.id,
+      httpMethod: healthMethod.httpMethod,
+      type: 'MOCK',
+      requestTemplates: {
+        'application/json': '{"statusCode": 200}',
+      },
     },
-  });
+  );
 
   // 5. Declaración de Respuesta de Método (Method Response HTTP 200)
-  const healthMethodResponse = new aws.apigateway.MethodResponse('v1-health-method-response', {
-    restApi: api.id,
-    resourceId: v1Resource.id,
-    httpMethod: healthMethod.httpMethod,
-    statusCode: '200',
-  });
+  const healthMethodResponse = new aws.apigateway.MethodResponse(
+    'v1-health-method-response',
+    {
+      restApi: api.id,
+      resourceId: v1Resource.id,
+      httpMethod: healthMethod.httpMethod,
+      statusCode: '200',
+    },
+  );
 
   // 6. Mapeo de Respuesta de Integración (Integration Response HTTP 200 JSON)
   const healthIntegrationResponse = new aws.apigateway.IntegrationResponse(
@@ -60,10 +66,11 @@ export function createApiGateWay() {
       httpMethod: healthMethod.httpMethod,
       statusCode: healthMethodResponse.statusCode,
       responseTemplates: {
-        'application/json': '{"statusCode": 200, "message": "Prestadeuda API Gateway v1 activa"}',
+        'application/json':
+          '{"statusCode": 200, "message": "Prestadeuda API Gateway v1 activa"}',
       },
     },
-    { dependsOn: [healthIntegration] }
+    { dependsOn: [healthIntegration] },
   );
 
   // 7. Sub-Rutas de Microservicios
@@ -105,7 +112,7 @@ export function createApiGateWay() {
         paymentResource,
         analyticsResource,
       ],
-    }
+    },
   );
 
   const stage = new aws.apigateway.Stage('api-stage', {
