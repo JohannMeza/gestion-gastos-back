@@ -24,7 +24,7 @@ pipeline {
     environment {
         PROJECT_NAME = "gestion-deudas-back"
         NODE_ENV = "${params.ENVIRONMENT}"
-        PULUMI_CONFIG_PASSPHRASE = "" // Necesario para Pulumi en local/CI
+        PULUMI_CONFIG_PASSPHRASE = "dev" // Passphrase no vacía para desbloquear encripción de Pulumi
     }
 
     stages {
